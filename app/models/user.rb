@@ -79,13 +79,14 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
+  # Returns a user's status feed.
   def feed
-    Post.where("user_id = ?", id)
+    Post.where("user_id IN (?) OR user_id = ?", following_ids, id)
   end
 
   # Follows a user.
   def follow(other_user)
-    following << other_user
+    active_relationships.create(followed_id: other_user.id)
   end
 
   # Unfollows a user.
